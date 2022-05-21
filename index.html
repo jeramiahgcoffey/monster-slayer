@@ -36,7 +36,7 @@
         <h3 v-else>It's a draw</h3>
         <button @click="startGame">Start New Game</button>
       </section>
-      <section id="controls" v-if="!winner">
+      <section id="controls" v-else>
         <button @click="attackMonster">ATTACK</button>
         <button :disabled="mayUseSpecial" @click="specialAttack">
           SPECIAL ATTACK
@@ -46,7 +46,22 @@
       </section>
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <ul>
+          <li v-for="message in logMessages">
+            <span
+              :class="{'log--player': message.actionBy === 'player', 'log--monster': message.actionBy === 'monster'}"
+              >{{message.actionBy === 'player' ? 'Player' : 'Monster'}}</span
+            >
+            <span v-if="message.actionType === 'heal'">
+              heals thy self for
+              <span class="log--heal">{{message.actionValue}}</span>
+            </span>
+            <span v-else>
+              attacks and deals
+              <span class="log--damage">{{message.actionValue}}</span></span
+            >
+          </li>
+        </ul>
       </section>
     </div>
   </body>

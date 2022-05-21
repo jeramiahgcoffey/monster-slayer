@@ -9,6 +9,7 @@ const app = Vue.createApp({
       monsterHealth: 100,
       currentRound: 0,
       winner: null,
+      logMessages: [],
     }
   },
   computed: {
@@ -38,8 +39,7 @@ const app = Vue.createApp({
       if (value <= 0 && this.monsterHealth <= 0) {
         // draw
         this.winner = 'draw'
-      }
-      if (value <= 0) {
+      } else if (value <= 0) {
         // Player lost
         this.winner = 'monster'
       }
@@ -48,8 +48,7 @@ const app = Vue.createApp({
       if (value <= 0 && this.playerHealth <= 0) {
         // draw
         this.winner = 'draw'
-      }
-      if (value <= 0) {
+      } else if (value <= 0) {
         // Monster lost
         this.winner = 'player'
       }
@@ -60,16 +59,19 @@ const app = Vue.createApp({
       this.currentRound++
       const damageValue = getRandomValue(5, 12)
       this.monsterHealth -= damageValue
+      this.addLogMessage('player', 'attack', damageValue)
       this.attackPlayer()
     },
     attackPlayer() {
       const damageValue = getRandomValue(8, 15)
       this.playerHealth -= damageValue
+      this.addLogMessage('monster', 'attack', damageValue)
     },
     specialAttack() {
       this.currentRound++
-      const attackValue = getRandomValue(10, 25)
-      this.monsterHealth -= attackValue
+      const damageValue = getRandomValue(10, 25)
+      this.monsterHealth -= damageValue
+      this.addLogMessage('player', 'attack', damageValue)
       this.attackPlayer()
     },
     healPlayer() {
@@ -80,6 +82,7 @@ const app = Vue.createApp({
       } else {
         this.playerHealth += healValue
       }
+      this.addLogMessage('player', 'heal', healValue)
       this.attackPlayer()
     },
     startGame() {
@@ -87,9 +90,18 @@ const app = Vue.createApp({
       this.playerHealth = 100
       this.monsterHealth = 100
       this.winner = null
+      this.logMessages = []
     },
     surrender() {
       this.winner = 'monster'
+    },
+    addLogMessage(who, what, value) {
+      const message = {
+        actionBy: who,
+        actionType: what,
+        actionValue: value,
+      }
+      this.logMessages.unshift(message)
     },
   },
 })
